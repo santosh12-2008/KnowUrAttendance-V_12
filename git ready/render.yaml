@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: know-ur-attendance
+    runtime: docker
+    plan: free
+    region: singapore # Closest low-latency region to Andhra University
+    disk:
+      name: attendance-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: ATTENDANCE_DB_PATH
+        value: /data/attendance.db
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PORT
+        value: "8000"
+      # Low-attendance alert emails (CR-triggered, never automatic) - see README
+      # "Email Alerts Setup" section for how to generate a Gmail App Password.
+      - key: SMTP_EMAIL
+        sync: false
+      - key: SMTP_APP_PASSWORD
+        sync: false
+      # Fallback "From" name only - in normal use the mail shows whichever CR/LR actually
+      # pressed Send instead of this (see backend/app/email_service.py).
+      - key: SMTP_SENDER_NAME
+        value: "Class Representative"
+      # Short labels shown inside the mail itself - deliberately NOT the full official
+      # department/college name, since these statements are a CR/LR class update, not an
+      # official circular. Change if your class/college go by different short names.
+      - key: BRANCH_SHORT
+        value: "CSE"
+      - key: COLLEGE_SHORT
+        value: "AUCE(A)"
